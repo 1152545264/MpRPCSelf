@@ -1,0 +1,59 @@
+syntax = "proto3"; //声明protobuf的版本
+
+package fixbug; //声明代码所在的包(对于C++而言是namespace)
+
+//定义下面的选项，表示生成service服务类和rpc方法描述，默认不生成service
+option cc_generic_services = true;
+
+message ResultCode
+{
+    int32 errcode = 1;
+    bytes errmsg = 2; //bytes等价于string类型，但是效率比string类型高
+}
+
+
+//数据包含列表和映射表
+message LoginRequest //登陆消息类型定义 name 和 password
+{
+    bytes name = 1; //定义字段位置 第几个字段
+    bytes pwd = 2;
+}
+
+
+//定义登录响应消息类型
+message LoginResponse
+{
+    ResultCode result=1;
+    bool success = 2;
+}
+
+message GetFriendListRequest
+{
+    uint32 userid=1;
+
+}
+
+message User
+{
+    bytes name = 1;
+    uint32 age = 2;
+    enum Sex{
+        MAN=0;
+        WOMAN=1;
+    }
+    Sex sex=3;
+}
+
+message GetFriendListRequestResponse
+{
+    ResultCode result = 1;
+    repeated User friendList = 2; //定义一个列表类型
+    // map<int32,string> test = 3; //定义一个映射表
+}
+
+//在protobuf中怎么定义描述rpc方法的类型 - service
+service UserServiceRpc
+{
+    rpc Login(LoginRequest) returns (LoginResponse);
+    rpc GetFriendLists(GetFriendListRequest) returns (GetFriendListRequestResponse);
+}
